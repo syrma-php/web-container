@@ -1,0 +1,23 @@
+{
+    "name": "syrma/web-container",
+    "type": "library",
+    "description": "Conterner of wep applications",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tamás Szijártó",
+            "email": "szijarto.tamas.developer@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "psr/log": "~1.0",
+        "psr/http-message": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Syrma\\WebContainer\\": "src/Syrma/WebContainer/"
+        }
+    },
+    "minimum-stability": "dev"
+}
