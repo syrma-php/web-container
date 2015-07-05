@@ -14,10 +14,23 @@
         "psr/log": "~1.0",
         "psr/http-message": "~1.0"
     },
+    "require-dev": {
+        "ext-swoole": "1.7.*",
+        "react/http": "0.4.*",
+        "monolog/monolog" : "1.*",
+        "phpunit/phpunit":  "4.5.*",
+        "guzzlehttp/psr7":  "1.*"
+    },
     "autoload": {
         "psr-4": {
             "Syrma\\WebContainer\\": "src/Syrma/WebContainer/"
         }
     },
+    "suggest": {
+        "ext-swoole": " Asynchronous & concurrent & distributed networking framework for PHP. http://www.swoole.com",
+        "react/http": "Library for building an evented http server.",
+        "guzzlehttp/psr7": "PSR-7 message implementation"
+    },
+
     "minimum-stability": "dev"
 }
