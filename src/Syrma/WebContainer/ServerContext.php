@@ -1,17 +1,16 @@
 <?php
 
-
 namespace Syrma\WebContainer;
 
 /**
- * Default implementation of ServerContextInterface
+ * Default implementation of ServerContextInterface.
  */
 class ServerContext implements ServerContextInterface
 {
-    const EXT_CODE_ADDRESS_EMPTY   = 1;
+    const EXT_CODE_ADDRESS_EMPTY = 1;
     const EXT_CODE_ADDRESS_INVALID = 2;
 
-    const EXT_CODE_PORT_EMPTY   = 3;
+    const EXT_CODE_PORT_EMPTY = 3;
     const EXT_CODE_PORT_INVALID = 4;
 
     /**
@@ -26,15 +25,14 @@ class ServerContext implements ServerContextInterface
 
     /**
      * @param string $listenAddress
-     * @param int $listenPort
+     * @param int    $listenPort
      */
     public function __construct(
         $listenAddress = ServerContextInterface::DEFAULT_ADDRESS,
         $listenPort = ServerContextInterface::DEFAULT_PORT
-    )
-    {
+    ) {
         $this->listenAddress = $this->normalizeListenAddress($listenAddress);
-        $this->listenPort    = $this->normalizeListenPort($listenPort);
+        $this->listenPort = $this->normalizeListenPort($listenPort);
     }
 
     /**
@@ -42,10 +40,9 @@ class ServerContext implements ServerContextInterface
      *
      * @return string
      */
-    private function normalizeListenAddress( $listenAddress )
+    private function normalizeListenAddress($listenAddress)
     {
-
-        if( empty($listenAddress) ){
+        if (empty($listenAddress)) {
             throw new \LogicException(
                 'The listenAddress is empty!',
                 self::EXT_CODE_ADDRESS_EMPTY
@@ -62,32 +59,31 @@ class ServerContext implements ServerContextInterface
      *
      * @return int
      */
-    private function normalizeListenPort( $listenPort )
+    private function normalizeListenPort($listenPort)
     {
-        if( empty($listenPort) ){
+        if (empty($listenPort)) {
             throw new \LogicException(
                 'The listenPort is empty!',
                 self::EXT_CODE_PORT_EMPTY
             );
         }
 
-        if( $listenPort != (string)intval($listenPort) ){
+        if ($listenPort != (string) intval($listenPort)) {
             throw new \InvalidArgumentException(sprintf(
                 'The listen port [%s] is invalid, use the valid integer!',
                 $listenPort
             ), self::EXT_CODE_PORT_INVALID);
         }
 
-        if( $listenPort < 1 || $listenPort > 65535){
+        if ($listenPort < 1 || $listenPort > 65535) {
             throw new \OutOfRangeException(sprintf(
                 'The listen port [%s] out of range (1-65535)',
                 $listenPort
             ), self::EXT_CODE_PORT_INVALID);
         }
 
-        return (int)$listenPort;
+        return (int) $listenPort;
     }
-
 
     /**
      * {@inheritdoc}

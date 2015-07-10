@@ -1,28 +1,22 @@
 <?php
 
-
 namespace Syrma\WebContainer;
 
 /**
  *
  */
-interface ServerInterface {
-
+interface ServerInterface
+{
     /**
-     * Start the server
+     * Start the server.
      *
-     * @param ServerContextInterface $context
+     * @param ServerContextInterface  $context
      * @param RequestHandlerInterface $requestHandler
-     *
-     * @return void
      */
-    public function start( ServerContextInterface $context, RequestHandlerInterface $requestHandler );
+    public function start(ServerContextInterface $context, RequestHandlerInterface $requestHandler);
 
     /**
-     * Stop the server
-     *
-     * @return void
+     * Stop the server.
      */
     public function stop();
-
 }

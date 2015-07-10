@@ -1,18 +1,17 @@
 <?php
 
-
 namespace Syrma\WebContainer;
 
 /**
- * Context of server
+ * Context of server.
  */
-interface ServerContextInterface {
-
+interface ServerContextInterface
+{
     const DEFAULT_ADDRESS = '0.0.0.0';
     const DEFAULT_PORT = 9100;
 
     /**
-     * Address where the server will listen
+     * Address where the server will listen.
      *
      * @example
      *      0.0.0.0   - all ip address
@@ -23,7 +22,7 @@ interface ServerContextInterface {
     public function getListenAddress();
 
     /**
-     * Port where the server will listen
+     * Port where the server will listen.
      *
      * @example
      *      80 - < 1024 require root permission
@@ -32,6 +31,4 @@ interface ServerContextInterface {
      * @return int
      */
     public function getListenPort();
-
-
 }
