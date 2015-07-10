@@ -1,17 +1,15 @@
 <?php
 
-
 namespace Syrma\WebContainer\RequestHandler;
 
 use Psr\Http\Message\RequestInterface;
-
 use Syrma\WebContainer\RequestHandlerInterface;
 
 /**
- * Callback request handler
+ * Callback request handler.
  */
-class CallbackRequestHandler implements RequestHandlerInterface{
-
+class CallbackRequestHandler implements RequestHandlerInterface
+{
     /**
      * @var callable
      */
@@ -25,11 +23,10 @@ class CallbackRequestHandler implements RequestHandlerInterface{
         $this->handler = $handler;
     }
 
-
     /**
      * {@inheritdoc}
      */
-    public function handle( RequestInterface $request )
+    public function handle(RequestInterface $request)
     {
         return call_user_func($this->handler, $request);
     }
