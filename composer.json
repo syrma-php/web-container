@@ -19,7 +19,8 @@
         "react/http": "0.4.*",
         "monolog/monolog" : "1.*",
         "phpunit/phpunit":  "4.5.*",
-        "guzzlehttp/psr7":  "1.*"
+        "zendframework/zend-diactoros":  "1.*",
+        "fabpot/php-cs-fixer": "1.*"
     },
     "autoload": {
         "psr-4": {
@@ -29,8 +30,8 @@
     "suggest": {
         "ext-swoole": " Asynchronous & concurrent & distributed networking framework for PHP. http://www.swoole.com",
         "react/http": "Library for building an evented http server.",
-        "guzzlehttp/psr7": "PSR-7 message implementation"
+        "zendframework/zend-diactoros": "PSR HTTP Message implementations"
     },
 
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
