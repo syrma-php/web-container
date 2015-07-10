@@ -2070,7 +2070,7 @@ class swoole_http_request
 
     /**
      * Get non urlencode-form original form POST data
-     * return String
+     * @return string|null
      */
     function rawContent()
     {
