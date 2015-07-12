@@ -19,6 +19,9 @@
     <filter>
         <whitelist>
             <directory>./src/Syrma/</directory>
+            <exclude>
+                <directory>./src/Syrma/WebContainer/Tests</directory>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>

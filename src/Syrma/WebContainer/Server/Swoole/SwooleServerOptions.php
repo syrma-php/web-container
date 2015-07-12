@@ -118,6 +118,7 @@ class SwooleServerOptions
             ), self::EXT_CODE_NOT_EXISTS);
         }
 
+        $isValid = false;
         switch (self::$optionsConfig[$name]) {
             case 'int':
                 $isValid = is_int($value);
@@ -134,8 +135,6 @@ class SwooleServerOptions
             case 'array':
                 $isValid = is_array($value);
                 break;
-            default:
-                $isValid = false;
         }
 
         if ($isValid !== true) {
