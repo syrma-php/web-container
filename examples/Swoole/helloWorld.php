@@ -18,8 +18,6 @@ require dirname(dirname(__DIR__)).'/vendor/autoload.php';
 
             $stream = new \Zend\Diactoros\Stream('php://temp', 'wb+');
             $stream->write('Hello World!');
-            $stream->rewind();
-
             return new \Zend\Diactoros\Response($stream, 200, ['X-Debug-token' => md5(1)]);
         })
     );

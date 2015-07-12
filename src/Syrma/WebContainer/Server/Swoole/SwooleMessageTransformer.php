@@ -62,9 +62,9 @@ class SwooleMessageTransformer
     {
         return $this->psr7Factory->createRequest(
             $this->transformUri($swooleRequest),
-            $swooleRequest->server['request_method'],
+            $this->transformRequestMethod($swooleRequest),
             $this->transformBody($swooleRequest),
-            array_change_key_case($swooleRequest->header, CASE_UPPER)
+            $this->transformHeader($swooleRequest)
         )
             ->withProtocolVersion($this->transformProtocolVersion($swooleRequest))
         ;
@@ -78,12 +78,12 @@ class SwooleMessageTransformer
     private function transformServerRequest(\swoole_http_request $swooleRequest)
     {
         return $this->psr7Factory->createServerRequest(
-            $swooleRequest->server,
+            $this->transformServerParams($swooleRequest),
             $this->transformUpladedFiles($swooleRequest),
             $this->transformUri($swooleRequest),
-            $swooleRequest->server['request_method'],
+            $this->transformRequestMethod($swooleRequest),
             $this->transformBody($swooleRequest),
-            array_change_key_case($swooleRequest->header, CASE_UPPER)
+            $this->transformHeader($swooleRequest)
         )
             ->withCookieParams($this->transformCookies($swooleRequest))
             ->withProtocolVersion($this->transformProtocolVersion($swooleRequest))
@@ -96,15 +96,15 @@ class SwooleMessageTransformer
      */
     public function reverseTransform(ResponseInterface $response, \swoole_http_response $swooleResponse)
     {
-        foreach ($response->getHeaders() as $key => $values) {
-            foreach ($values as $value) {
-                $swooleResponse->header($key, $value);
-            }
+        foreach (array_keys($response->getHeaders()) as $name) {
+            $swooleResponse->header($name, $response->getHeaderLine($name));
         }
 
         $swooleResponse->status($response->getStatusCode());
 
         $body = $response->getBody();
+        $body->rewind();
+
         while (false === $body->eof()) {
             $swooleResponse->write($body->read($this->responseBuffer));
         }
@@ -114,11 +114,52 @@ class SwooleMessageTransformer
     /**
      * @param \swoole_http_request $swooleRequest
      *
+     * @return array
+     */
+    private function transformServerParams(\swoole_http_request $swooleRequest)
+    {
+        $serverParams = array_change_key_case($swooleRequest->server, \CASE_UPPER);
+
+        foreach ($swooleRequest->header as $name => $value) {
+            $serverParams['HTTP_'.strtoupper($name)] = $value;
+        }
+
+        return $serverParams;
+    }
+
+    /**
+     * @param \swoole_http_request $swooleRequest
+     *
      * @return string
      */
     private function transformUri(\swoole_http_request $swooleRequest)
     {
-        $uri = $swooleRequest->header['host'].$swooleRequest->server['request_uri'];
+        //Scheme
+        if (isset($swooleRequest->header['x-forwarded-proto'])) {
+            $scheme = $swooleRequest->header['x-forwarded-proto'];
+        } elseif (isset($swooleRequest->server['https']) && 'off' !== $swooleRequest->server['https']) {
+            $scheme = 'https';
+        } else {
+            $scheme = 'http';
+        }
+
+        //Host
+        if (isset($swooleRequest->header['x-forwarded-host'])) {
+            $hostAndPort = $swooleRequest->header['x-forwarded-host'];
+        } elseif (isset($swooleRequest->header['host'])) {
+            $hostAndPort = $swooleRequest->header['host'];
+        } else {
+            $hostAndPort = 'localhost';
+        }
+
+        //requestUri
+        if (isset($swooleRequest->server['request_uri'])) {
+            $path = $swooleRequest->server['request_uri'];
+        } else {
+            $path = '/';
+        }
+
+        $uri = $scheme.'://'.$hostAndPort.$path;
         if (isset($swooleRequest->server['query_string'])) {
             $uri .= '?'.$swooleRequest->server['query_string'];
         }
@@ -133,7 +174,7 @@ class SwooleMessageTransformer
      */
     private function transformBody(\swoole_http_request $swooleRequest)
     {
-        if (false !== $rawContent = $swooleRequest->rawContent()) {
+        if (isset($swooleRequest->fd) && false !== $rawContent = $swooleRequest->rawContent()) {
             $body = fopen('php://temp', 'wb+');
             fwrite($body, $rawContent);
             fseek($body, 0);
@@ -152,7 +193,10 @@ class SwooleMessageTransformer
      */
     private function transformProtocolVersion(\swoole_http_request $swooleRequest)
     {
-        if (false !== preg_match('+/(?P<ver>\d\.\d)$+', $swooleRequest->server['server_protocol'], $matches)) {
+        if (
+            isset($swooleRequest->server['server_protocol']) &&
+            0 !== preg_match('+/(?P<ver>\d\.\d)$+', $swooleRequest->server['server_protocol'], $matches)
+        ) {
             return $matches['ver'];
         } else {
             return '1.1';
@@ -166,6 +210,10 @@ class SwooleMessageTransformer
      */
     private function transformUpladedFiles(\swoole_http_request $swooleRequest)
     {
+        if (!isset($swooleRequest->files)) {
+            return array();
+        }
+
         $files = array();
 
         foreach ($swooleRequest->files as $name => $file) {
@@ -189,5 +237,31 @@ class SwooleMessageTransformer
     private function transformCookies(\swoole_http_request $swooleRequest)
     {
         return isset($swooleRequest->cookie) ? (array) $swooleRequest->cookie : array();
+    }
+
+    /**
+     * @param \swoole_http_request $swooleRequest
+     *
+     * @return string
+     */
+    private function transformRequestMethod(\swoole_http_request $swooleRequest)
+    {
+        return isset($swooleRequest->server['request_method']) ?
+            $swooleRequest->server['request_method'] : 'GET';
+    }
+
+    /**
+     * @param \swoole_http_request $swooleRequest
+     *
+     * @return array
+     */
+    private function transformHeader(\swoole_http_request $swooleRequest)
+    {
+        $headers = array();
+        foreach ($swooleRequest->header as $name => $value) {
+            $headers[ strtr(ucwords(strtr($name, array('-' => ' '))), array(' ' => '-')) ] = $value;
+        }
+
+        return $headers;
     }
 }
