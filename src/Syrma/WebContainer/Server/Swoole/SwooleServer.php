@@ -73,4 +73,12 @@ class SwooleServer implements ServerInterface
             $this->messageTransformer->reverseTransform($response, $swooleResponse);
         };
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function isAvaiable()
+    {
+        return class_exists('\swoole_http_server');
+    }
 }

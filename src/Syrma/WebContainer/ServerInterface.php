@@ -19,4 +19,13 @@ interface ServerInterface
      * Stop the server.
      */
     public function stop();
+
+    /**
+     * The server is avaiable.
+     *
+     * Here check requirements
+     *
+     * @return bool
+     */
+    public static function isAvaiable();
 }
