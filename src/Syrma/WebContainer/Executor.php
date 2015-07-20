@@ -30,8 +30,6 @@ class Executor
      * @param ServerInterface         $server
      * @param RequestHandlerInterface $requestHandler
      * @param LoggerInterface         $logger
-     *
-     * @internal param ServerContextInterface $context
      */
     public function __construct(
         ServerInterface $server,
