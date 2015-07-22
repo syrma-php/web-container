@@ -49,18 +49,28 @@ class SymfonyRequestHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $handler = $this->createHandler();
 
-        $resp = $handler->handle(new ServerRequest(array(
+        $request = new ServerRequest(array(
             'HOST' => 'http://syrma.local',
             'REQUEST_URI' => '/foo/bar',
-        )));
+        ));
 
-        $this->assertInstanceOf(ResponseInterface::class, $resp);
-        $this->assertEquals('Symfony response for:/foo/bar', (string) $resp->getBody());
-        $this->assertEquals(201, $resp->getStatusCode());
+        $this->assertEquals(0, $handler->getRequestMappingCount());
+
+        $response = $handler->handle($request);
+
+        $this->assertEquals(1, $handler->getRequestMappingCount());
+
+        $handler->finish($request, $response);
+
+        $this->assertEquals(0, $handler->getRequestMappingCount());
+
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals('Symfony response for:/foo/bar', (string) $response->getBody());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals(array(
             'x-debug' => array('qwerty'),
             'cache-control' => array('no-cache'),
             'date' => array('1970-01-02 10:11:12'),
-        ), $resp->getHeaders());
+        ), $response->getHeaders());
     }
 }

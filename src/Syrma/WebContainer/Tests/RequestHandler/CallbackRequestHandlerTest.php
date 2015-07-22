@@ -26,10 +26,13 @@ class CallbackRequestHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testHandleWithClosure()
     {
-        $handler = new CallbackRequestHandler(function ($requset) {
-            $this->assertInstanceOf(RequestInterface::class, $requset);
+        $handler = new CallbackRequestHandler(function ($request) {
+            $this->assertInstanceOf(RequestInterface::class, $request);
 
             return $this->getResponse();
+        }, function ($request, $response) {
+            $this->assertInstanceOf(RequestInterface::class, $request);
+            $this->assertInstanceOf(ResponseInterface::class, $response);
         });
 
         $result = $handler->handle($this->getRequest());
@@ -38,16 +41,29 @@ class CallbackRequestHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testHandleWithCallable()
     {
-        $handler = new CallbackRequestHandler(array($this, 'handleMethod'));
+        $mock = $this->getMockBuilder(\stdClass::class)
+            ->setMethods(array('handle', 'finish'))
+            ->getMock()
+        ;
 
-        $result = $handler->handle($this->getRequest());
-        $this->assertInstanceOf(ResponseInterface::class, $result);
-    }
+        $mock->expects($this->once())
+            ->method('handle')
+            ->with($this->isInstanceOf(RequestInterface::class))
+        ;
 
-    public function handleMethod($requset)
-    {
-        $this->assertInstanceOf(RequestInterface::class, $requset);
+        $mock->expects($this->once())
+            ->method('finish')
+            ->with(
+                $this->isInstanceOf(RequestInterface::class),
+                $this->isInstanceOf(ResponseInterface::class)
+            )
+        ;
 
-        return $this->getResponse();
+        $handler = new CallbackRequestHandler(
+            array($mock, 'handle'),
+            array($mock, 'finish')
+        );
+        $handler->handle($this->getRequest());
+        $handler->finish($this->getRequest(), $this->getResponse());
     }
 }

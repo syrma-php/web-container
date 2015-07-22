@@ -18,4 +18,12 @@ interface RequestHandlerInterface
      * @return ResponseInterface
      */
     public function handle(RequestInterface $request);
+
+    /**
+     * Call the finished request.
+     *
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
+     */
+    public function finish(RequestInterface $request, ResponseInterface $response);
 }

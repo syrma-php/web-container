@@ -3,6 +3,7 @@
 namespace Syrma\WebContainer\RequestHandler;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -36,6 +37,11 @@ class SymfonyRequestHandler implements RequestHandlerInterface
     private $httpMessageFactory;
 
     /**
+     * @var \SplObjectStorage
+     */
+    private $requestMapping;
+
+    /**
      * @param HttpKernelInterface            $kernel
      * @param HttpFoundationFactoryInterface $httpFoundationFactory
      * @param HttpMessageFactoryInterface    $httpMessageFactory
@@ -49,6 +55,7 @@ class SymfonyRequestHandler implements RequestHandlerInterface
         $this->isTerminableKernel = $this->kernel instanceof TerminableInterface;
         $this->httpFoundationFactory = $httpFoundationFactory;
         $this->httpMessageFactory = $httpMessageFactory;
+        $this->requestMapping = new \SplObjectStorage();
     }
 
     /**
@@ -60,9 +67,36 @@ class SymfonyRequestHandler implements RequestHandlerInterface
         $sfResponse = $this->kernel->handle($sfRequest);
 
         if ($this->isTerminableKernel) {
-            $this->kernel->terminate($sfRequest, $sfResponse);
+            $this->requestMapping->attach($request, array($sfRequest, $sfResponse));
         }
 
         return $this->httpMessageFactory->createResponse($sfResponse);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function finish(RequestInterface $request, ResponseInterface $response)
+    {
+        if ($this->isTerminableKernel) {
+            list($sfRequest, $sfResponse) = $this->requestMapping->offsetGet($request);
+            $this->requestMapping->detach($request);
+
+            $kernel = $this->kernel;
+            /* @var $kernel TerminableInterface */
+            $kernel->terminate($sfRequest, $sfResponse);
+        }
+    }
+
+    /**
+     * Helper method for testing.
+     *
+     * @internal
+     *
+     * @return int
+     */
+    public function getRequestMappingCount()
+    {
+        return count($this->requestMapping);
     }
 }
