@@ -56,8 +56,10 @@ class SwooleServer implements ServerInterface
      */
     public function stop()
     {
-        $this->server->shutdown();
-        $this->server = null;
+        if (null !== $this->server) {
+            $this->server->shutdown();
+            $this->server = null;
+        }
     }
 
     /**
@@ -71,6 +73,8 @@ class SwooleServer implements ServerInterface
             $request = $this->messageTransformer->transform($swooleRequest);
             $response = $requestHandler->handle($request);
             $this->messageTransformer->reverseTransform($response, $swooleResponse);
+
+            $requestHandler->finish($request, $response);
         };
     }
 
