@@ -7,12 +7,13 @@ matrix:
         - php: 5.5
         - php: 5.6
         - php: nightly
+          env: FORCE_ADD_SWOOLE=1
     allow_failures:
         - php: nightly
 
 install:
     - pecl install -f swoole
-    - php -i
+    - if [ "$FORCE_ADD_SWOOLE" != "" ]; then echo 'extension = "swoole.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi;
     - php -m
     - composer self-update
     - composer install
