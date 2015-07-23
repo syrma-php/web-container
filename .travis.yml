@@ -12,6 +12,8 @@ matrix:
 
 install:
     - pecl install -f swoole
+    - php -i
+    - php -m
     - composer self-update
     - composer install
 
