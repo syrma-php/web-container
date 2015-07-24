@@ -1,22 +1,21 @@
 <?php
 
-
 namespace Syrma\WebContainer\Exception;
 
 /**
- * Http specific exception
+ * Http specific exception.
  */
-interface HttpExceptionInterface {
-
+interface HttpExceptionInterface
+{
     /**
-     * Return the HTTP status code
+     * Return the HTTP status code.
      *
      * @return int
      */
     public function getStatusCode();
 
     /**
-     * Return the response headers
+     * Return the response headers.
      *
      * @return array
      */

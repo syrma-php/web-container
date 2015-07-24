@@ -5,7 +5,7 @@ namespace Syrma\WebContainer\Exception;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Exception with response
+ * Exception with response.
  */
 interface ResponseAwareExceptionInterface
 {
