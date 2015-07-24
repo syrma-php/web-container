@@ -3,6 +3,7 @@
 namespace Syrma\WebContainer\Util;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -55,4 +56,15 @@ interface Psr7FactoryInterface
      * @return UploadedFileInterface
      */
     public function createUploadedFile($streamOrFile, $size, $errorStatus, $clientFilename = null, $clientMediaType = null);
+
+    /**
+     * @param string|resource|StreamInterface $stream  Stream identifier and/or actual stream resource
+     * @param int                             $status  Status code for the response, if any.
+     * @param array                           $headers Headers for the response, if any.
+     *
+     * @throws \InvalidArgumentException on any invalid element.
+     *
+     * @return ResponseInterface
+     */
+    public function createResponse($stream = 'php://memory', $status = 200, array $headers = []);
 }

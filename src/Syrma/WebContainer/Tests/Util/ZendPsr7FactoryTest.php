@@ -4,6 +4,7 @@ namespace Syrma\WebContainer\Tests\Util;
 
 use Syrma\WebContainer\Util\ZendPsr7Factory;
 use Zend\Diactoros\Request;
+use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\UploadedFile;
 
@@ -75,6 +76,23 @@ class ZendPsr7FactoryTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($fileFullEx, $fileFull);
         } finally {
             fclose($file);
+        }
+    }
+
+    public function testCreateResponse()
+    {
+        $stream = fopen('php://temp', 'wb+');
+        $headers = array(
+            'Content-Type' => array('text/html; charset=UTF-8'),
+        );
+
+        $response = $this->factory->createResponse($stream, 301, $headers);
+        $responseEx = new Response($stream, 301, $headers);
+
+        try {
+            $this->assertEquals($response, $responseEx);
+        } finally {
+            fclose($stream);
         }
     }
 }
