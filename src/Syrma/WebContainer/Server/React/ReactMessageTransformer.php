@@ -106,7 +106,7 @@ class ReactMessageTransformer
             $headers[$name] = $response->getHeaderLine($name);
         }
 
-        if (!isset($headers['Content-Length'])) {
+        if (!isset($headers['Content-Length']) && $body->getSize() > 0) {
             $headers['Content-Length'] = $body->getSize();
         }
 
