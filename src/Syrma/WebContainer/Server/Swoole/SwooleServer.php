@@ -27,6 +27,11 @@ class SwooleServer implements ServerInterface
     private $serverOptions;
 
     /**
+     * @var int
+     */
+    private $parentPid;
+
+    /**
      * @param SwooleMessageTransformer $messageTransformer
      * @param SwooleServerOptions      $serverOptions
      */
@@ -34,6 +39,7 @@ class SwooleServer implements ServerInterface
     {
         $this->messageTransformer = $messageTransformer;
         $this->serverOptions = $serverOptions;
+        $this->parentPid = posix_getpid();
     }
 
     /**
@@ -56,7 +62,12 @@ class SwooleServer implements ServerInterface
      */
     public function stop()
     {
-        if (null !== $this->server) {
+        $pid = posix_getpid();
+
+        if ($this->parentPid != $pid) {
+            //kill the thread
+            posix_kill($pid, SIGTERM);  //TODO
+        } elseif ($this->parentPid == $pid && null !== $this->server) {
             $this->server->shutdown();
             $this->server = null;
         }

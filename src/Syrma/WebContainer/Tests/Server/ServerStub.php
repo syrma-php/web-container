@@ -17,11 +17,18 @@ class ServerStub implements ServerInterface
     private $startFn;
 
     /**
-     * @param callable $startFn
+     * @var callable|null
      */
-    public function __construct(callable $startFn)
+    private $stopFn;
+
+    /**
+     * @param callable      $startFn
+     * @param callable|null $stopFn
+     */
+    public function __construct(callable $startFn, callable $stopFn = null)
     {
         $this->startFn = $startFn;
+        $this->stopFn = $stopFn;
     }
 
     /**
@@ -37,7 +44,9 @@ class ServerStub implements ServerInterface
      */
     public function stop()
     {
-        //nothing
+        if (null !== $this->stopFn) {
+            call_user_func($this->stopFn);
+        }
     }
 
     /**
