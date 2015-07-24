@@ -1,18 +1,16 @@
 <?php
 
-
 namespace Syrma\WebContainer\Tests\Server;
-
 
 use Syrma\WebContainer\RequestHandlerInterface;
 use Syrma\WebContainer\ServerContextInterface;
 use Syrma\WebContainer\ServerInterface;
 
 /**
- * Server for tests
+ * Server for tests.
  */
-class ServerStub implements ServerInterface{
-
+class ServerStub implements ServerInterface
+{
     /**
      * @var callable
      */
@@ -39,7 +37,7 @@ class ServerStub implements ServerInterface{
      */
     public function stop()
     {
-       //nothing
+        //nothing
     }
 
     /**
@@ -49,5 +47,4 @@ class ServerStub implements ServerInterface{
     {
         return true;
     }
-
 }
