@@ -48,4 +48,14 @@ class ErrorPageLoaderTest extends \PHPUnit_Framework_TestCase
     {
         new ErrorPageLoader(sys_get_temp_dir());
     }
+
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionCode 2
+     */
+    public function testBadTemplateFile()
+    {
+        (new ErrorPageLoaderStub(__DIR__.'/fixtures/ErrorPage'))
+            ->loadContentByStatusCode(100);
+    }
 }

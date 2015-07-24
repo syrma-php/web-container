@@ -55,9 +55,9 @@ class ErrorPageLoader implements ErrorPageLoaderInterface
     {
         $fileName = $this->guessFile($statusCode);
 
-        if (false === $file = fopen($fileName, 'r')) {
-            throw new \RuntimeException(sprintf('The file(%s) cannot open!'), self::EXT_CODE_NOT_OPEN);
-        };
+        if (false === $file = @fopen($fileName, 'r')) {
+            throw new \RuntimeException(error_get_last()['message'], self::EXT_CODE_NOT_OPEN);
+        }
 
         $content = fopen('php://temp', 'r+');
         stream_copy_to_stream($file, $content);
@@ -69,11 +69,13 @@ class ErrorPageLoader implements ErrorPageLoaderInterface
     }
 
     /**
+     * @internal - private
+     *
      * @param int $statusCode
      *
      * @return string
      */
-    private function guessFile($statusCode)
+    protected function guessFile($statusCode)
     {
         $fileName = sprintf('%s/%s.html', $this->templatePath, (int) $statusCode);
 
