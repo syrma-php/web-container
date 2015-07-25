@@ -41,11 +41,19 @@ class ErrorPageLoader implements ErrorPageLoaderInterface
     }
 
     /**
+     * @return string
+     */
+    public static function getDefaultTemplatePath()
+    {
+        return dirname(__DIR__).'/Resources/views/ErrorPage/';
+    }
+
+    /**
      * @return ErrorPageLoader
      */
     public static function createDefault()
     {
-        return new static(dirname(__DIR__).'/Resources/views/ErrorPage/');
+        return new static(static::getDefaultTemplatePath());
     }
 
     /**
