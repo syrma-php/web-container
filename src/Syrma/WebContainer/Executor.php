@@ -38,6 +38,8 @@ class Executor implements LoggerAwareInterface
      * @param ServerInterface           $server
      * @param RequestHandlerInterface   $requestHandler
      * @param ExceptionHandlerInterface $exceptionHandler
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct(
         ServerInterface $server,
@@ -53,6 +55,8 @@ class Executor implements LoggerAwareInterface
         $this->server = $server;
         $this->requestHandler = $requestHandler;
         $this->exceptionHandler = $exceptionHandler;
+
+        set_time_limit(0); // no time limit
     }
 
     /**
