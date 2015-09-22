@@ -105,9 +105,11 @@ class SwooleMessageTransformer
         $body = $response->getBody();
         $body->rewind();
 
-        while (false === $body->eof()) {
-            $swooleResponse->write($body->read($this->responseBuffer));
+        # workaround for https://bugs.php.net/bug.php?id=68948
+        while (false === $body->eof() && '' !== $buffer = $body->read($this->responseBuffer)) {
+            $swooleResponse->write($buffer);
         }
+
         $swooleResponse->end();
     }
 
