@@ -51,6 +51,8 @@ class MemoryLimitationChecker implements LimitationCheckerInterface
      * @param string $limit
      *
      * @return float
+     *
+     * @throws \InvalidArgumentException
      */
     private static function parse($limit)
     {
