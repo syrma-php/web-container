@@ -21,8 +21,6 @@
         "monolog/monolog" : "1.*",
         "phpunit/phpunit":  "4.5.*",
         "zendframework/zend-diactoros":  "1.*",
-        "symfony/psr-http-message-bridge": "~0.2",
-        "symfony/http-kernel": "2.3.*",
         "fabpot/php-cs-fixer": "1.*"
     },
     "autoload": {
