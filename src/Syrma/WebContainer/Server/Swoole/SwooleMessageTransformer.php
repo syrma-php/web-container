@@ -172,17 +172,16 @@ class SwooleMessageTransformer
     /**
      * @param \swoole_http_request $swooleRequest
      *
-     * @return resource|string
+     * @return StreamInterface
      */
     private function transformBody(\swoole_http_request $swooleRequest)
     {
+        $body = $this->psr7Factory->createStream();
+
         if (isset($swooleRequest->fd) && false !== $rawContent = $swooleRequest->rawContent()) {
-            $body = fopen('php://temp', 'wb+');
-            fwrite($body, $rawContent);
-            fseek($body, 0);
+            $body->write($rawContent);
+            $body->rewind();
             unset($rawContent);
-        } else {
-            $body = 'php://temp';
         }
 
         return $body;
