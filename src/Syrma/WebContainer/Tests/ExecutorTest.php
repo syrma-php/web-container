@@ -24,17 +24,19 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
      */
     public function testNotAvaiableServer()
     {
-        new Executor(
-            new ServerNotAvaiableStub(function () {}),
-            $this->getMock(RequestHandlerInterface::class),
-            $this->getMock(ExceptionHandlerInterface::class)
-        );
+        $requestHandler = $this->getMock(RequestHandlerInterface::class);
+        /* @var RequestHandlerInterface $requestHandler */
+        $exceptionHandler = $this->getMock(ExceptionHandlerInterface::class);
+        /* @var ExceptionHandlerInterface $exceptionHandler */
+
+        new Executor(new ServerNotAvaiableStub(function () {}), $requestHandler, $exceptionHandler);
     }
 
     public function testExecute()
     {
         $startFn = function (ServerContextInterface $context, RequestHandlerInterface $requestHandler) {
             $request = $this->getMock(Requestinterface::class);
+            /* @var RequestInterface $request */
             $response = $requestHandler->handle($request);
             $requestHandler->finish($request, $response);
         };
@@ -52,13 +54,51 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
                 $this->isInstanceOf(ResponseInterface::class)
             )
         ;
+        /* @var RequestHandlerInterface $requestHandler */
+        $exceptionHandler = $this->getMock(ExceptionHandlerInterface::class);
+        /* @var ExceptionHandlerInterface $exceptionHandler */
 
         $executor = new Executor(
             new ServerStub($startFn),
             $requestHandler,
-            $this->getMock(ExceptionHandlerInterface::class)
+            $exceptionHandler
         );
         $executor->execute(new ServerContext());
+    }
+
+    /**
+     * @dataProvider provideExecuteWithContext
+     *
+     * @param string                 $address
+     * @param int                    $port
+     * @param ServerContextInterface $context
+     */
+    public function testExecuteWithContext($address, $port, ServerContextInterface $context = null)
+    {
+        $server = new ServerStub(function (ServerContextInterface $context) use ($address, $port) {
+            $this->assertSame($address, $context->getListenAddress());
+            $this->assertSame($port, $context->getListenPort());
+        });
+
+        $requestHandler = $this->getMock(RequestHandlerInterface::class);
+        /* @var RequestHandlerInterface $requestHandler */
+        $exceptionHandler = $this->getMock(ExceptionHandlerInterface::class);
+        /* @var ExceptionHandlerInterface $exceptionHandler */
+
+        $executor = new Executor($server, $requestHandler, $exceptionHandler);
+        $executor->execute($context);
+    }
+
+    /**
+     * @return array
+     */
+    public function provideExecuteWithContext()
+    {
+        return array(
+            array(ServerContextInterface::DEFAULT_ADDRESS, ServerContextInterface::DEFAULT_PORT, new ServerContext()),
+            array('127.0.0.1', 80, new ServerContext('127.0.0.1', 80)),
+            array(ServerContextInterface::DEFAULT_ADDRESS, ServerContextInterface::DEFAULT_PORT, null),
+        );
     }
 
     /**
@@ -69,6 +109,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $startFn = function (ServerContextInterface $context, RequestHandlerInterface $requestHandler) {
             $request = $this->getMock(Requestinterface::class);
+            /* @var RequestInterface $request */
             $response = $requestHandler->handle($request);
             $requestHandler->finish($request, $response);
         };
@@ -92,6 +133,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $startFn = function (ServerContextInterface $context, RequestHandlerInterface $requestHandler) {
             $request = $this->getMock(Requestinterface::class);
+            /* @var RequestInterface $request */
             $response = $requestHandler->handle($request);
             $requestHandler->finish($request, $response);
         };
@@ -113,7 +155,9 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     public function testExecuteWithInternalException()
     {
         $startFn = function (ServerContextInterface $context, RequestHandlerInterface $requestHandler) {
-            $response = $requestHandler->handle($this->getMock(Requestinterface::class));
+            $request = $this->getMock(Requestinterface::class);
+            /* @var RequestInterface $request */
+            $response = $requestHandler->handle($request);
             $this->assertEquals('TestContent', (string) $response->getBody());
         };
 
@@ -142,7 +186,9 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     public function testExecuteWithExceptionAndInternalException()
     {
         $startFn = function (ServerContextInterface $context, RequestHandlerInterface $requestHandler) {
-            $response = $requestHandler->handle($this->getMock(Requestinterface::class));
+            $request = $this->getMock(Requestinterface::class);
+            /* @var RequestInterface $request */
+            $response = $requestHandler->handle($request);
             $this->assertEquals('TestContent', (string) $response->getBody());
         };
 

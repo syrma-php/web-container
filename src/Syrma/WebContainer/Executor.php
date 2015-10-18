@@ -62,10 +62,14 @@ class Executor implements LoggerAwareInterface
     /**
      * Start the server.
      *
-     * @param ServerContextInterface $context
+     * @param ServerContextInterface|NULL $context
      */
-    public function execute(ServerContextInterface $context)
+    public function execute(ServerContextInterface $context = null)
     {
+        if (null === $context) {
+            $context = new ServerContext();
+        }
+
         $this->logServerStart($context);
 
         $this->server->start(
@@ -180,7 +184,7 @@ class Executor implements LoggerAwareInterface
     private function handleException(\Exception $ex)
     {
         if (null !== $response = $this->handleInternalException($ex)) {
-            $this->logException($ex, true);
+            $this->logException($ex);
 
             return $response;
         }
