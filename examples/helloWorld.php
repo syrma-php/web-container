@@ -3,10 +3,9 @@
 use Psr\Http\Message\RequestInterface;
 use Syrma\WebContainer\Container;
 
-require dirname(dirname(__DIR__)).'/vendor/autoload.php';
+require dirname(__DIR__).'/vendor/autoload.php';
 
 $container = new Container();
-$container->setServer( $container->createSwooleServer());
 $container->createExecutor(function(RequestInterface $request) use($container){
 
     $stream = $container->getPsr7Factory()->createStream();
