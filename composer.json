@@ -1,7 +1,7 @@
 {
     "name": "syrma/web-container",
     "type": "library",
-    "description": "Conterner of wep applications",
+    "description": "Container for PSR7 compatibility applications",
     "license": "MIT",
     "authors": [
         {
