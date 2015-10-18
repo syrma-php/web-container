@@ -104,8 +104,6 @@ class Executor implements LoggerAwareInterface
                 } catch (\Exception $ex) {
                     $this->handleException($ex);
                 }
-
-                pcntl_signal_dispatch(); //TODO
             }
         );
     }
