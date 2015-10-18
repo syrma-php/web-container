@@ -5,6 +5,7 @@ namespace Syrma\WebContainer\Server\Swoole;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Syrma\WebContainer\Util\Psr7FactoryInterface;
 
 /**
@@ -85,6 +86,7 @@ class SwooleMessageTransformer
             $this->transformBody($swooleRequest),
             $this->transformHeader($swooleRequest)
         )
+            ->withParsedBody(isset($swooleRequest->post) ? $swooleRequest->post : null)
             ->withCookieParams($this->transformCookies($swooleRequest))
             ->withProtocolVersion($this->transformProtocolVersion($swooleRequest))
         ;

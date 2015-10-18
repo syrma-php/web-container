@@ -118,4 +118,22 @@ class SwooleMessageTransformerServerTest  extends AbstractSwooleMessageTransform
             'bar' => 'barVal',
         ), $request->getCookieParams());
     }
+
+    public function testPost()
+    {
+        $swooleRequest = $this->createSwooleRequest();
+        $swooleRequest->post = array(
+            'foo' => '&bar',
+            'hello' => 'world!',
+        );
+
+        $request = $this->createTransformer()->transform($swooleRequest);
+        $this->assertInstanceOf(ServerRequest::class, $request);
+
+        /* @var  ServerRequest $request */
+        $this->assertEquals(array(
+            'foo' => '&bar',
+            'hello' => 'world!',
+        ), $request->getParsedBody());
+    }
 }
