@@ -215,19 +215,30 @@ class SwooleMessageTransformer
             return array();
         }
 
-        $files = array();
+        $factory = function (array $fileInfo) use (&$factory) {
 
-        foreach ($swooleRequest->files as $name => $file) {
-            $files[$name] = $this->psr7Factory->createUploadedFile(
-                $file['tmp_name'],
-                $file['size'],
-                $file['error'],
-                $file['name'],
-                $file['type']
-            );
-        }
+            $files = array();
+            foreach ($fileInfo as $name => &$attr) {
+                if (is_array($attr) && isset($attr['tmp_name'])) {
+                    $files[$name] = $this->psr7Factory->createUploadedFile(
+                        $attr['tmp_name'],
+                        $attr['size'],
+                        $attr['error'],
+                        $attr['name'],
+                        $attr['type']
+                    );
+                } elseif (is_array($attr)) {
+                    $files[$name] = $factory($attr);
+                } else {
+                    throw new \InvalidArgumentException('Invalid value in files specification');
+                }
+            }
 
-        return $files;
+            return $files;
+
+        };
+
+        return $factory($swooleRequest->files);
     }
 
     /**

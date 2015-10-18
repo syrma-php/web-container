@@ -69,12 +69,21 @@ class SwooleMessageTransformerServerTest  extends AbstractSwooleMessageTransform
                 'error' => 0,
                 'size' => 14620,
             ),
-            'file2' => array(
-                'name' => 'space-04.jpg',
-                'type' => 'image/png',
-                'tmp_name' => '/tmp/2794797237924797237d88f9ad4848dbd17',
-                'error' => 0,
-                'size' => 1620,
+            'myFiles' => array(
+                array(
+                    'name' => 'space-04.jpg',
+                    'type' => 'image/png',
+                    'tmp_name' => '/tmp/2794797237924797237d88f9ad4848dbd17',
+                    'error' => 0,
+                    'size' => 1620,
+                ),
+                array(
+                    'name' => 'space-03.jpg',
+                    'type' => 'image/png',
+                    'tmp_name' => '/tmp/2794797237924797237d88f9ad4848d1237',
+                    'error' => 0,
+                    'size' => 620,
+                ),
             ),
         );
 
