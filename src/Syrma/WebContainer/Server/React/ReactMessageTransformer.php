@@ -5,6 +5,7 @@ namespace Syrma\WebContainer\Server\React;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use React\Http\Request as ReactRequest;
 use React\Http\Response as ReactResponse;
 use Syrma\WebContainer\Util\Psr7FactoryInterface;
@@ -87,9 +88,10 @@ class ReactMessageTransformer
             $this->transformBody($reactRequest),
             $reactRequest->getHeaders()
         )
+            ->withParsedBody($reactRequest->getPost())
             ->withCookieParams($this->transformCookies($reactRequest))
             ->withProtocolVersion($reactRequest->getHttpVersion())
-            ;
+        ;
     }
 
     /**
@@ -188,13 +190,13 @@ class ReactMessageTransformer
     /**
      * @param ReactRequest $reactRequest
      *
-     * @return resource|string
+     * @return StreamInterface
      */
     private function transformBody(ReactRequest $reactRequest)
     {
-        // TODO - implements this
-
-        $body = 'php://temp';
+        $body = $this->psr7Factory->createStream();
+        $body->write((string) $reactRequest->getBody());
+        $body->rewind();
 
         return $body;
     }
@@ -206,8 +208,30 @@ class ReactMessageTransformer
      */
     private function transformUpladedFiles(ReactRequest $reactRequest)
     {
-        // TODO - implements this
-        return  array();
+        $factory = function (array $fileInfo) use (&$factory) {
+
+            $files = array();
+            foreach ($fileInfo as $name => &$attr) {
+                if (is_array($attr) && isset($attr['stream'])) {
+                    $files[$name] = $this->psr7Factory->createUploadedFile(
+                        $attr['stream'],
+                        $attr['size'],
+                        $attr['error'],
+                        $attr['name'],
+                        $attr['type']
+                    );
+                } elseif (is_array($attr)) {
+                    $files[$name] = $factory($attr);
+                } else {
+                    throw new \InvalidArgumentException('Invalid value in files specification');
+                }
+            }
+
+            return $files;
+
+        };
+
+        return $factory($reactRequest->getFiles());
     }
 
     /**

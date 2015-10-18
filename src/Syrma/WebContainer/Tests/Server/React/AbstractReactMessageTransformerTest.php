@@ -3,6 +3,7 @@
 namespace Syrma\WebContainer\Tests\Server\React;
 
 use React\Http\Request as ReactRequest;
+use React\Http\RequestParser;
 use Syrma\WebContainer\Server\React\ReactMessageTransformer;
 use Syrma\WebContainer\Util\ZendPsr7Factory;
 use Zend\Diactoros\Uri;
@@ -30,7 +31,20 @@ abstract class AbstractReactMessageTransformerTest extends \PHPUnit_Framework_Te
         $httpVersion = '1.1',
         array $headers = array()
     ) {
-        return new ReactRequest($method, $path, $query, $httpVersion, $headers);
+        $data = strtr('{method} {uri} HTTP/{version}', array(
+            '{method}' => $method,
+            '{uri}' => $path.'?'.http_build_query($query),
+            '{version}' => $httpVersion,
+        ));
+
+        foreach ($headers as $name => $value) {
+            $data .= strtr("\r\n{name}: {value}", array(
+                '{name}' => $name,
+                '{value}' => $value,
+            ));
+        }
+
+        return (new RequestParser())->parseHeaders($data."\r\n\r\n");
     }
 
     /**
@@ -152,7 +166,11 @@ abstract class AbstractReactMessageTransformerTest extends \PHPUnit_Framework_Te
 
     public function testBody()
     {
-        $this->markTestSkipped('The multipart request is not supported in ReactHttpServer');
+        $reactRequest = $this->createReactRequest('POST');
+        $reactRequest->setBody('Hello World!');
+
+        $request = $this->createTransformer()->transform($reactRequest);
+        $this->assertEquals('Hello World!', (string) $request->getBody());
     }
 
     public function testHeader()

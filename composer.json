@@ -17,7 +17,7 @@
     },
     "require-dev": {
         "ext-swoole": ">=1.7.18",
-        "react/http": "0.4.*",
+        "react/http": "@dev",
         "monolog/monolog" : "1.*",
         "phpunit/phpunit":  "4.5.*",
         "zendframework/zend-diactoros":  "1.*",
