@@ -5,6 +5,7 @@ namespace Syrma\WebContainer\Util;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Stream;
 use Zend\Diactoros\UploadedFile;
 
 /**
@@ -48,5 +49,13 @@ class ZendPsr7Factory implements Psr7FactoryInterface
     public function createResponse($stream = 'php://memory', $status = 200, array $headers = [])
     {
         return new Response($stream, $status, $headers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createStream($mode = 'r+')
+    {
+        return new Stream('php://memory', $mode);
     }
 }

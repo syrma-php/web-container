@@ -67,4 +67,11 @@ interface Psr7FactoryInterface
      * @return ResponseInterface
      */
     public function createResponse($stream = 'php://memory', $status = 200, array $headers = []);
+
+    /**
+     * @param string $mode
+     *
+     * @return StreamInterface
+     */
+    public function createStream($mode = 'r+');
 }

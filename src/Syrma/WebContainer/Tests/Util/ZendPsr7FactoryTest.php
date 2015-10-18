@@ -2,6 +2,7 @@
 
 namespace Syrma\WebContainer\Tests\Util;
 
+use Psr\Http\Message\StreamInterface;
 use Syrma\WebContainer\Util\ZendPsr7Factory;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
@@ -94,5 +95,16 @@ class ZendPsr7FactoryTest extends \PHPUnit_Framework_TestCase
         } finally {
             fclose($stream);
         }
+    }
+
+    public function testCreateStream()
+    {
+        $stream = $this->factory->createStream();
+        $this->assertInstanceOf(StreamInterface::class, $stream);
+
+        $stream->write('Hello World!');
+        $stream->rewind();
+
+        $this->assertSame('Hello World!', $stream->getContents());
     }
 }
